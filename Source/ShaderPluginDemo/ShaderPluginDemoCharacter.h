@@ -27,6 +27,17 @@ class AShaderPluginDemoCharacter : public ACharacter
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
+
+	/** Stereo camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USceneCaptureComponent2D* StereoCameraComponentL;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USceneCaptureComponent2D* StereoCameraComponentR;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UTextureRenderTarget2D* RenderTargetL;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UTextureRenderTarget2D* RenderTargetR;
+
 public:
 	AShaderPluginDemoCharacter();
 

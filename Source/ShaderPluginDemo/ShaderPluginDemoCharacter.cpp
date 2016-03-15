@@ -4,6 +4,8 @@
 #include "ShaderPluginDemoCharacter.h"
 #include "Animation/AnimInstance.h"
 #include "GameFramework/InputSettings.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -24,6 +26,38 @@ AShaderPluginDemoCharacter::AShaderPluginDemoCharacter()
 	FirstPersonCameraComponent->AttachParent = GetCapsuleComponent();
 	FirstPersonCameraComponent->RelativeLocation = FVector(-39.56f, 1.75f, 64.f); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> TextureFinderL(
+		TEXT("TextureRenderTarget2D'/Game/FirstPerson/Textures/TargetL.TargetL'"));
+	RenderTargetL = TextureFinderL.Object;
+
+	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> TextureFinderR(
+		TEXT("TextureRenderTarget2D'/Game/FirstPerson/Textures/TargetR.TargetR'"));
+	RenderTargetR = TextureFinderR.Object;
+
+
+	/*RenderTargetL = CreateDefaultSubobject<UTextureRenderTarget2D>(TEXT("RenderTarget_L"));
+	RenderTargetL->InitAutoFormat(1024, 1024);
+	RenderTargetL->AddressX = TA_Wrap;
+	RenderTargetL->AddressY = TA_Wrap;*/
+
+	/*RenderTargetR = CreateDefaultSubobject<UTextureRenderTarget2D>(TEXT("RenderTarget_R"));
+	RenderTargetR->InitAutoFormat(1024, 1024);
+	RenderTargetR->AddressX = TA_Wrap;
+	RenderTargetR->AddressY = TA_Wrap;*/
+
+	StereoCameraComponentL = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("StereoCameraComponent_L"));
+	//StereoCameraComponentL->FOVAngle = 90.f;
+	StereoCameraComponentL->AttachParent = GetCapsuleComponent();
+	StereoCameraComponentL->RelativeLocation = FVector(0.f, 0.f, 70.f); // Position the camera
+	StereoCameraComponentL->TextureTarget = RenderTargetL;
+	StereoCameraComponentL->bCaptureEveryFrame = false;
+
+	StereoCameraComponentR = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("StereoCameraComponent_R"));
+	StereoCameraComponentR->AttachParent = GetCapsuleComponent();
+	StereoCameraComponentR->RelativeLocation = FVector(0.f, 30.f, 70.f); // Position the camera
+	StereoCameraComponentR->TextureTarget = RenderTargetR;
+	StereoCameraComponentR->bCaptureEveryFrame = false;
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
