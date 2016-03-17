@@ -6,6 +6,7 @@
 #include "GameFramework/InputSettings.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "../Public/HighResScreenshot.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -173,6 +174,34 @@ void AShaderPluginDemoCharacter::Tick(float DeltaSeconds)
 		ComputeShaderBlend = FMath::Clamp(ComputeShaderBlend + ComputeShaderBlendScalar * DeltaSeconds, 0.0f, 1.0f);
 		PixelShading->ExecutePixelShader(RenderTarget, InputTexture, FColor(EndColorBuildup * 255, 0, 0, 255), ComputeShaderBlend);
 	}
+
+	//save screenshot to disk
+	SaveRenderTargetToDisk(RenderTargetL, "screenshotL1.png",false);
+	SaveRenderTargetToDisk(RenderTargetR, "screenshotR1.png",false);
+}
+
+void AShaderPluginDemoCharacter::SaveRenderTargetToDisk(UTextureRenderTarget2D* InRenderTarget, FString Filename, bool debug)
+{
+
+	FTextureRenderTargetResource* RTResource = InRenderTarget->GameThread_GetRenderTargetResource();
+
+	FReadSurfaceDataFlags ReadPixelFlags(RCM_UNorm);
+	ReadPixelFlags.SetLinearToGamma(true);
+	TArray<FColor> OutBMP;
+	RTResource->ReadPixels(OutBMP, ReadPixelFlags);
+
+	FIntRect SourceRect;
+
+	FIntPoint DestSize(InRenderTarget->GetSurfaceWidth(), InRenderTarget->GetSurfaceHeight());
+
+
+	FString ResultPath;
+	FHighResScreenshotConfig& HighResScreenshotConfig = GetHighResScreenshotConfig();
+	if (HighResScreenshotConfig.SaveImage(FPaths::GameSavedDir() + TEXT("Screenshots/") + Filename, OutBMP, DestSize, &ResultPath) && debug) {
+		UE_LOG(LogFPChar, Warning, TEXT("Screenshot saved to: %s"), *ResultPath);
+	}
+
+
 }
 
 void AShaderPluginDemoCharacter::OnFire()

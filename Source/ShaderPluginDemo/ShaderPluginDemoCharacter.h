@@ -86,6 +86,13 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	/**
+	 * Save to disk camera feed
+	 * @param InRenderTarget	This is the target texture
+	 * @param Filename	This is the filename to save
+	 */
+	void SaveRenderTargetToDisk(UTextureRenderTarget2D* InRenderTarget, FString Filename, bool debug);
+
 	struct TouchData
 	{
 		TouchData() { bIsPressed = false;Location=FVector::ZeroVector;}
